@@ -1,0 +1,45 @@
+
+  - name: Disable SELinux
+    selinux:
+      state: disabled
+
+  - name: install the latest version of Apache
+    yum:
+      name: httpd
+      state: latest
+
+  - name: Start and enable Apache
+    systemd:
+      state: started
+      enabled: yes
+      name: httpd
+        
+  - name: Download Template
+    get_url:
+      url: https://www.free-css.com/assets/files/free-css-templates/download/page294/woody.zip
+      dest: /tmp/
+
+  - name: install unzip
+    yum:
+      name: unzip
+      state: latest
+
+  - name: Unarchive a file that is already on the remote machine
+    unarchive:  
+      src: /tmp/woody.zip
+      dest: /var/www/html
+      remote_src: yes
+
+  - name: Move Template Files
+    shell: mv /var/www/html/carpenter-website-template/*  /var/www/html
+    args: 
+      creates: /var/www/html/index.html
+
+
+  - name: Recursively change ownership of a directory
+    file:
+      path: /var/www/html
+      state: directory
+      recurse: yes
+      owner: apache
+      group: apache
